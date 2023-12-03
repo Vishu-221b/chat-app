@@ -3,6 +3,7 @@ import {BrowserRouter, Routes, Route } from 'react-router-dom';
 import Register from './Register.jsx';
 import Login from './Login.jsx';
 import { AuthProvider } from './AuthContext.jsx';
+import Profile from './Profile.jsx';
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Register/>} />
         <Route path="/login" element={<Login/>} /> 
+        <Route path="/profile" element={<Profile/>}/>
       </Routes>
     </BrowserRouter>
     </AuthProvider>

@@ -1,17 +1,29 @@
-import {Link} from "react-router-dom";
-import { useContext, useState } from "react";
+
+import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "./AuthContext";
+import { useNavigate } from 'react-router-dom';
+
 
 function Login(){
-
 const [username, setUsername] = useState("");
 const [password, setPassword] = useState("");
-const { login } = useContext(AuthContext);
+const { isLoggedIn, login } = useContext(AuthContext);
+
+const navigate = useNavigate(); 
 
 const handleSubmit = (e) => {
     e.preventDefault();
     login(username, password);
-};
+  };
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate('/profile'); 
+      console.log("Login successful");
+    }
+  }, [isLoggedIn]);
+
+
     return(
         <div className="bg-blue-500 min-h-screen flex flex-col justify-center items-center">
         <form className="flex flex-col" onSubmit = {handleSubmit}>
