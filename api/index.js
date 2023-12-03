@@ -43,8 +43,7 @@ app.post('/login',async (req, res) => {
 try{
     //Retrieves user from database;
     const user = await User.findOne({ username });
-    console.log(user);
-
+    console.log(user)
     if(!user) {
         return res.status(401).json({ message: "Invalid username or password." });
     }
@@ -55,7 +54,7 @@ try{
     }
 
     //Send Welcome message
-    res.status(200).json({ message: "Welcome!" });
+    res.status(200).json({ message: "Welcome!", user });
 }
 catch(error){
     res.status(500).json({ message: "Error logging in." });
