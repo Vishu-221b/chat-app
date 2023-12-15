@@ -1,21 +1,15 @@
 import React from 'react';
-import {BrowserRouter, Routes, Route } from 'react-router-dom';
-import Register from './Register.jsx';
-import Login from './Login.jsx';
-import { AuthProvider } from './AuthContext.jsx';
-import PrivateRoute from './PrivateRoute.jsx';
+import { Routes, Route } from 'react-router-dom';
+import Homepage from './Pages/Homepage.jsx';
+import "./App.css";
 
 function App() {
   return (
-    <AuthProvider>
-    <BrowserRouter>
+    <div className="App">
       <Routes>
-        <Route path="/" element={<Register/>} />
-        <Route path="/login" element={<Login/>} /> 
-        <Route path="/profile" element={<PrivateRoute />} />
+        <Route exact path="/" element={<Homepage />} />
       </Routes>
-    </BrowserRouter>
-    </AuthProvider>
+    </div>
   );
 }
 
