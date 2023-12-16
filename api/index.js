@@ -1,28 +1,29 @@
 import express from 'express';
 import cors from 'cors';
-import chats from './data/data.js';
-import connectToDatabase from "./config/db.js";
+import connectDb from "./config/db.js";
+import colors from "colors";
+import dotenv from "dotenv";
+import userRoutes from "./routes/userRoutes.js";
 
+import errorMiddleware from "./middleware/errorMiddleware.js";
+import path from 'path';
+
+dotenv.config();
 
 const app = express();
-const port = 3000;
-connectToDatabase();
+const port = process.env.PORT || 3000;
+connectDb();
 
 app.use(cors());
 app.use(express.json());
 
 
-app.get('/', (req, res) => { res.json ('Hello people, Welcome to my world.')});
-
-app.get('/api/chat', (req, res) => {
-    res.send(chats);
-})
-
-app.get('/api/chat/:id', (req,res)=> {
-    const singlechat = chats.find((c) => c._id === req.params.id);
-    res.send(singlechat);
-})
+app.use("/api/user", userRoutes);
 
 
+app.get('/', (req, res) => { res.send ('The server is running')});
 
-app.listen(port, () => console.log("The server is running."));
+app.use(errorMiddleware.notFound);
+app.use(errorMiddleware.errorHandler);
+
+app.listen(port, () => console.log(`The server is running on port ${port} `.yellow));
