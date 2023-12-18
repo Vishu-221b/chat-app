@@ -41,7 +41,7 @@ const Login = () => {
       };
 
       const { data } = await axios.post(
-        "/api/user/login",
+        "http://localhost:3000/api/user/login",
         { email, password },
         config
       );
@@ -110,12 +110,9 @@ const Login = () => {
         variant="solid"
         colorScheme="red"
         width="100%"
-        onClick={() => {
-          setEmail("guest@example.com");
-          setPassword("123456");
-        }}
+        /* onClick={() => {}} */
       >
-        Get Guest User Credentials
+        Forgot password
       </Button>
     </VStack>
   );

@@ -5,19 +5,31 @@ import asyncHandler from "express-async-handler";
 //@description     Get or Search all users
 //@route           GET /api/user?search=
 //@access          Public
+
+
 const allUsers = asyncHandler(async (req, res) => {
+  console.log(req.query.search); // This will log the search keyword to the console
   const keyword = req.query.search
     ? {
-        $or: [
-          { name: { $regex: req.query.search, $options: "i" } },
-          { email: { $regex: req.query.search, $options: "i" } },
+        $and: [
+          {
+            $or: [
+              { name: { $regex: req.query.search, $options: "i" } },
+              { email: { $regex: req.query.search, $options: "i" } },
+            ],
+          },
+          { _id: { $ne: req.user._id } },
         ],
       }
-    : {};
+    : { _id: { $ne: req.user._id } };
 
-  const users = await User.find(keyword).find({ _id: { $ne: req.user._id } });
+  const users = await User.find(keyword);
+
   res.send(users);
 });
+
+
+
 
 //@description     Register new user
 //@route           POST /api/user/
