@@ -16,8 +16,8 @@ import { useToast } from "@chakra-ui/toast";
 import axios from "axios";
 import ChatLoading from "./ChatLoading";
 import { Spinner } from "@chakra-ui/spinner";
-/* import ProfileModal from "./ProfileModal"; */
-/* import { getSender } from "../../config/ChatLogics"; */
+import ProfileModal from "./miscellaneous/ProfileModal";
+import { getSender } from "../config/ChatLogics";
 import UserListItem from "./userAvatar/UserListItem";
 
 const SideDrawer = () => {
@@ -87,6 +87,37 @@ const logoutHandler = () => {
    }
  };
 
+
+ const accessChat = async (userId) => {
+
+  try{
+    setLoadingChat(true);
+      const config = {
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
+      const { data } = await axios.post(`http://localhost:3000/api/chat`, { userId }, config);
+      console.log(data);
+
+      if (!chats.find((c) => c._id === data._id)) 
+      setChats([data, ...chats]);
+      setSelectedChat(data);
+      setLoadingChat(false);
+      onClose();
+  }
+  catch(error){
+    toast({
+      title: "Error fetching the chat",
+        description: error.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom-left",
+    })};
+ }
+
   return (
     <>
       <Box
@@ -148,9 +179,9 @@ const logoutHandler = () => {
               />
             </MenuButton>
             <MenuList>
-              {/* <ProfileModal user={user}>
+              <ProfileModal user={user}>
                   <MenuItem>My Profile</MenuItem>
-                </ProfileModal> */}
+                </ProfileModal>
 
               <MenuDivider />
 
