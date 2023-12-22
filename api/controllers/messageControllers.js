@@ -29,42 +29,48 @@ const sendMessage = asyncHandler(async (req, res) => {
     return res.sendStatus(400);
   }
 
-  let newMessage = {
-    sender: req.user._id,
-    content: content,
-    chat: chatId,
-  };
-
   try {
-    let message = await Message.create(newMessage);
+    var message = await Message.create({
+      sender: req.user._id,
+      content: content,
+      chat: chatId,
+      
+    });
+    
 
-   try {
-     message = await message
-       .populate("sender", "name pic")
-       .populate("chat")
-       .execPopulate();
-   } catch (error) {
-     console.log("Error during population1:", error);
-   }
-  
     try {
-      message = await User.populate(message, {
-        path: "chat.users",
-        select: "name pic email",
-      });
+      message = await message
+        .populate("sender", "name pic");
+        console.log("success1")
     } catch (error) {
-      console.log("Error during population2:", error);
+      console.log("Error during population1:", error);
+    }
+
+     try {
+       message = await message.populate("chat", "users");
+       console.log("success2");
+     } catch (error) {
+       console.log("Error during population2:", error);
+     }
+
+    try {
+      message = await User
+      .populate(message, {path: "chat.users",select: "name pic email",});
+      console.log("success3");
+    } catch (error) {
+      console.log("Error during population:", error);
     }
 
     try {
       await Chat.findByIdAndUpdate(req.body.chatId, { latestMessage: message });
       res.json(message);
+      console.log("success4");
+      console.log("message sent", message);
     } catch (error) {
       console.log("Error updating chat or sending response:", error);
     }
-
   } catch (error) {
-    res.status(400);
+    res.status(500); // Use 500 for server errors
     throw new Error(error.message);
   }
 });

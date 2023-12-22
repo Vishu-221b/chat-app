@@ -9,7 +9,6 @@ import messageRoutes from "./routes/messageRoutes.js";
 import errorMiddleware from "./middleware/errorMiddleware.js";
 import path from 'path';
 import { Server } from "socket.io";
-import http from "http";
 
 dotenv.config();
 
@@ -32,50 +31,51 @@ app.use(errorMiddleware.notFound);
 app.use(errorMiddleware.errorHandler);
 
 
-const server = http.createServer(app);
+const server = app.listen(
+  port,
+  console.log(`Server running on PORT ${port}...`.yellow.bold)
+);
+
+
 const io = new Server(server, {
   pingTimeout: 60000,
   cors: {
     origin: "http://localhost:5173",
-    // credentials: true,
   },
 });
 
-server.listen(port, () =>
-  console.log(`The server is running on port ${port} `.yellow)
-);
-
-
 io.on("connection", (socket) => {
   console.log("Connected to socket.io");
+
   socket.on("setup", (userData) => {
     socket.join(userData._id);
     socket.emit("connected");
   });
 
-
-
   socket.on("join chat", (room) => {
     socket.join(room);
     console.log("User Joined Room: " + room);
   });
+
   socket.on("typing", (room) => socket.in(room).emit("typing"));
   socket.on("stop typing", (room) => socket.in(room).emit("stop typing"));
 
   socket.on("new message", (newMessageRecieved) => {
-    var chat = newMessageRecieved.chat;
+    let chat = newMessageRecieved.chat;
+    console.log("new message", newMessageRecieved);
+console.log("chat", chat);
 
-    if (!chat.users) return console.log("chat.users not defined");
+  if (!chat.users) return console.log("chat.users not defined");
 
     chat.users.forEach((user) => {
       if (user._id == newMessageRecieved.sender._id) return;
 
-      socket.in(user._id).emit("message recieved", newMessageRecieved);
+      io.to(user._id).emit("message received", newMessageRecieved);
     });
   });
 
-  socket.off("setup", () => {
-    console.log("USER DISCONNECTED");
-    socket.leave(userData._id);
+  socket.on("disconnect", () => {
+    console.log("User Disconnected");
+    // Handle disconnect logic if needed
   });
 });
