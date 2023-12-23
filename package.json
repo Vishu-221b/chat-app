@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon index.js",
     "server": "nodemon api/index.js",
-    "build": "npm install --legacy-peer-deps && npm install --legacy-peer-deps --prefix client && npm run build --prefix frontend"
+    "build": "npm install --legacy-peer-deps && npm install --legacy-peer-deps --prefix client && npm run build --prefix client"
 
   },
   "type": "module",
