@@ -13,7 +13,7 @@ import { Server } from "socket.io";
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5000;
 connectDb();
 
 app.use(cors());
@@ -24,8 +24,23 @@ app.use("/api/chat", chatRoutes);
 app.use("/api/message", messageRoutes);
 
 
+// --------------------------deployment------------------------------
 
-app.get('/', (req, res) => { res.send ('The server is running')});
+const __dirname1 = path.resolve();
+
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname1, "/client/dist")));
+
+  app.get("*", (req, res) =>
+    res.sendFile(path.resolve(__dirname1, "client", "dist", "index.html"))
+  );
+} else {
+  app.get("/", (req, res) => {
+    res.send("API is running..");
+  });
+}
+
+// --------------------------deployment------------------------------
 
 app.use(errorMiddleware.notFound);
 app.use(errorMiddleware.errorHandler);
@@ -44,35 +59,61 @@ const io = new Server(server, {
   },
 });
 
-io.on("connection", (socket) => {
+  io.on("connection", (socket) => {
   console.log("Connected to socket.io");
 
+
   socket.on("setup", (userData) => {
-    socket.join(userData._id);
-    socket.emit("connected");
+    try {
+      console.log("User setup:", userData);
+      socket.join(userData._id);
+      socket.emit("connected");
+      console.log("User joined room:", userData._id);
+    } catch (error) {
+      console.error("Error in setup:", error);
+    }
   });
 
-  socket.on("join chat", (room) => {
-    socket.join(room);
-    console.log("User Joined Room: " + room);
-  });
-
-  socket.on("typing", (room) => socket.in(room).emit("typing"));
-  socket.on("stop typing", (room) => socket.in(room).emit("stop typing"));
-
-  socket.on("new message", (newMessageRecieved) => {
-    let chat = newMessageRecieved.chat;
-    console.log("new message", newMessageRecieved);
-console.log("chat", chat);
-
-  if (!chat.users) return console.log("chat.users not defined");
-
-    chat.users.forEach((user) => {
-      if (user._id == newMessageRecieved.sender._id) return;
-
-      io.to(user._id).emit("message received", newMessageRecieved);
+    socket.on("join chat", (room) => {
+      try {
+        console.log("User joining chat:", room);
+        socket.join(room);
+        console.log("User Joined Room: ", room);
+      } catch (error) {
+        console.error("Error in join chat:", error);
+      }
     });
-  });
+
+
+
+
+   socket.on("typing", (room) => socket.in(room).emit("typing"));
+   socket.on("stop typing", (room) => socket.in(room).emit("stop typing"));
+
+   socket.on("stop typing", (room) => {
+     try {
+       socket.in(room).emit("stop typing");
+       console.log("User stopped typing");
+     } catch (error) {
+       console.error("Error in stop typing:", error);
+     }
+   });
+
+   socket.on("new message", (newMessageRecieved) => {
+     try {
+       let chat = newMessageRecieved.chat;
+        console.log("chat:", chat);
+       if (!chat.users) return console.log("chat.users not defined");
+
+       chat.users.forEach((user) => {
+         if (user._id == newMessageRecieved.sender._id) return;
+
+         socket.in(user._id).emit("message recieved", newMessageRecieved);
+       });
+     } catch (error) {
+       console.error("Error in new message:", error);
+     }
+   });
 
   socket.on("disconnect", () => {
     console.log("User Disconnected");

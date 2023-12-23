@@ -41,14 +41,13 @@ const sendMessage = asyncHandler(async (req, res) => {
     try {
       message = await message
         .populate("sender", "name pic");
-        console.log("success1")
+        
     } catch (error) {
       console.log("Error during population1:", error);
     }
 
      try {
        message = await message.populate("chat", "users");
-       console.log("success2");
      } catch (error) {
        console.log("Error during population2:", error);
      }
@@ -56,7 +55,7 @@ const sendMessage = asyncHandler(async (req, res) => {
     try {
       message = await User
       .populate(message, {path: "chat.users",select: "name pic email",});
-      console.log("success3");
+    
     } catch (error) {
       console.log("Error during population:", error);
     }
@@ -64,8 +63,6 @@ const sendMessage = asyncHandler(async (req, res) => {
     try {
       await Chat.findByIdAndUpdate(req.body.chatId, { latestMessage: message });
       res.json(message);
-      console.log("success4");
-      console.log("message sent", message);
     } catch (error) {
       console.log("Error updating chat or sending response:", error);
     }

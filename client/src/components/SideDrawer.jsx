@@ -68,7 +68,7 @@ const logoutHandler = () => {
      };
 
      const { data } = await axios.get(
-       `http://localhost:3000/api/user?search=${search}`,
+       `/api/user?search=${search}`,
        config
      );
      console.log(data); 
@@ -98,7 +98,7 @@ const logoutHandler = () => {
           Authorization: `Bearer ${user.token}`,
         },
       };
-      const { data } = await axios.post(`http://localhost:3000/api/chat`, { userId }, config);
+      const { data } = await axios.post(`/api/chat`, { userId }, config);
       console.log(data);
 
       if (!chats.find((c) => c._id === data._id)) 

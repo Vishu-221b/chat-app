@@ -1,4 +1,5 @@
 import { Avatar } from "@chakra-ui/avatar";
+import React, { useEffect } from "react";
 import { Tooltip } from "@chakra-ui/tooltip";
 import ScrollableFeed from "react-scrollable-feed";
 import {
@@ -10,7 +11,12 @@ import {
 import { ChatState } from "../Context/ChatProvider";
 
 const ScrollableChat = ({ messages }) => {
+  
   const { user } = ChatState();
+
+  useEffect(() => {
+    console.log("messages prop changed:", messages);
+  }, [messages]);
 
   return (
     <ScrollableFeed>
