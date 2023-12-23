@@ -2,9 +2,12 @@
   "name": "vishu-chat-app",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "api/index.js",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "nodemon index.js",
+    "server": "nodemon api/index.js",
+    "build": "npm install --legacy-peer-deps && npm install --legacy-peer-deps --prefix client && npm run build --prefix frontend"
+
   },
   "type": "module",
   "dependencies": {
