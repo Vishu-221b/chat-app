@@ -4,7 +4,7 @@ import Homepage from './Pages/Homepage.jsx';
 import Chatpage from './Pages/Chatpage.jsx';
 import "./App.css";
 import axios from "axios";
-axios.defaults.baseURL = "http://localhost:5000";
+axios.defaults.baseURL = "https://hehechat.onrender.com";
 
 function App() {
   return (
